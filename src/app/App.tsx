@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import html2canvas from "html2canvas";
 
 type Tab = "lite" | "business" | "compare";
 
@@ -272,6 +273,7 @@ function PosterShell({ children, badge }: { children: React.ReactNode; badge?: s
   return (
     <div className="flex justify-center px-4 py-10">
       <div
+        id="poster-export"
         className="w-full max-w-[640px] bg-card rounded-sm overflow-hidden"
         style={{ boxShadow: "0 20px 60px rgba(13,18,38,0.18)" }}
       >
@@ -892,6 +894,21 @@ export default function App() {
   const handleDiscount = useCallback((v: number) => setDiscount(v), []);
   const handleCode = useCallback((v: string) => setPromoCode(v), []);
 
+  const handleDownload = async () => {
+    const el = document.getElementById("poster-export");
+    if (!el) return;
+    try {
+      const canvas = await html2canvas(el, { scale: 2, useCORS: true });
+      const dataUrl = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.download = `meqos-${active}-poster.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to generate image", err);
+    }
+  };
+
   const currency = CURRENCIES[currencyCode];
 
   return (
@@ -953,10 +970,17 @@ export default function App() {
       </div>
 
       <div
-        className="text-center pb-8 text-xs"
+        className="text-center pb-8 text-xs flex flex-col items-center gap-4"
         style={{ fontFamily: "'DM Sans', sans-serif", color: "rgba(13,18,38,0.35)" }}
       >
-        Use browser Print (⌘P) → Save as PDF to export each poster
+        <button
+          onClick={handleDownload}
+          className="px-6 py-2 text-sm font-bold text-white rounded-sm shadow-sm hover:opacity-90 transition-opacity"
+          style={{ background: ORANGE }}
+        >
+          Download as Image
+        </button>
+        <span>Use browser Print (⌘P) → Save as PDF to export each poster</span>
       </div>
     </div>
   );
