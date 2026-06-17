@@ -9,8 +9,23 @@ const GREEN = "#15803d";
 const LITE = { monthly: 39, yearly: 399 };
 const BUSINESS = { monthly: 79, yearly: 813.61 };
 
-function fmt(n: number) {
-  return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+type CurrencyCode = "USD" | "INR" | "AED";
+interface Currency {
+  code: CurrencyCode;
+  label: string;
+  symbol: string;
+  rate: number;
+}
+
+const CURRENCIES: Record<CurrencyCode, Currency> = {
+  USD: { code: "USD", label: "USD ($)", symbol: "$", rate: 1 },
+  INR: { code: "INR", label: "INR (₹)", symbol: "₹", rate: 83.5 },
+  AED: { code: "AED", label: "AED (د.إ)", symbol: "د.إ", rate: 3.67 },
+};
+
+function fmtPrice(amountInUSD: number, currency: Currency) {
+  const converted = amountInUSD * currency.rate;
+  return `${currency.symbol}${converted.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function calcDiscount(yearly: number, pct: number) {
@@ -42,11 +57,15 @@ function DiscountBar({
   onChange,
   promoCode,
   onCodeChange,
+  currencyCode,
+  onCurrencyChange,
 }: {
   discount: number;
   onChange: (v: number) => void;
   promoCode: string;
   onCodeChange: (v: string) => void;
+  currencyCode: CurrencyCode;
+  onCurrencyChange: (c: CurrencyCode) => void;
 }) {
   const presets = [50, 60, 70, 76, 80];
 
@@ -55,7 +74,35 @@ function DiscountBar({
       className="sticky top-[61px] z-10 border-b border-black/10"
       style={{ background: "#fffef9" }}
     >
-      <div className="max-w-[680px] mx-auto px-6 py-4 flex flex-wrap items-center gap-4">
+      <div className="max-w-[800px] mx-auto px-6 py-4 flex flex-wrap items-center gap-4">
+        {/* Currency selector */}
+        <div className="flex items-center gap-2">
+          <label
+            className="text-xs font-bold tracking-widest uppercase whitespace-nowrap"
+            style={{ fontFamily: "'DM Mono', monospace", color: "rgba(13,18,38,0.5)" }}
+          >
+            Currency
+          </label>
+          <select
+            value={currencyCode}
+            onChange={(e) => onCurrencyChange(e.target.value as CurrencyCode)}
+            className="text-xs font-bold rounded-sm border py-1.5 px-2 focus:outline-none focus:ring-1 bg-white cursor-pointer"
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              color: NAVY,
+              borderColor: "rgba(13,18,38,0.2)",
+            }}
+          >
+            {Object.values(CURRENCIES).map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="w-px h-6 bg-black/10 hidden sm:block" />
+
         {/* Slider + number */}
         <div className="flex items-center gap-3 flex-1 min-w-[220px]">
           <label
@@ -116,6 +163,8 @@ function DiscountBar({
           ))}
         </div>
 
+        <div className="w-px h-6 bg-black/10 hidden sm:block" />
+
         {/* Promo code label */}
         <div className="flex items-center gap-2">
           <label
@@ -129,7 +178,7 @@ function DiscountBar({
             value={promoCode}
             onChange={(e) => onCodeChange(e.target.value.toUpperCase())}
             placeholder="e.g. 70OFF"
-            className="w-24 text-xs font-bold rounded-sm border py-1 px-2 focus:outline-none focus:ring-1 uppercase"
+            className="w-24 text-xs font-bold rounded-sm border py-1.5 px-2 focus:outline-none focus:ring-1 uppercase"
             style={{
               fontFamily: "'DM Mono', monospace",
               color: NAVY,
@@ -150,6 +199,7 @@ function PromoCard({
   savings,
   highlight = false,
   discount,
+  currency,
 }: {
   code: string;
   yearlyPrice: number;
@@ -157,6 +207,7 @@ function PromoCard({
   savings: number;
   highlight?: boolean;
   discount: number;
+  currency: Currency;
 }) {
   return (
     <div
@@ -188,14 +239,14 @@ function PromoCard({
           className="text-3xl font-bold leading-none"
           style={{ fontFamily: "'DM Mono', monospace" }}
         >
-          ${fmt(yearlyPrice)}
+          {fmtPrice(yearlyPrice, currency)}
           <span className="text-sm font-normal opacity-70">/year</span>
         </div>
         <div
           className="text-sm opacity-80 mt-1"
           style={{ fontFamily: "'DM Mono', monospace" }}
         >
-          ${fmt(monthlyPrice)}/month
+          {fmtPrice(monthlyPrice, currency)}/month
         </div>
       </div>
 
@@ -208,7 +259,7 @@ function PromoCard({
             className="text-xs font-semibold"
             style={{ fontFamily: "'DM Sans', sans-serif", color: "#4ade80" }}
           >
-            Save ${fmt(savings)}/year
+            Save {fmtPrice(savings, currency)}/year
           </span>
         </div>
       </div>
@@ -239,7 +290,7 @@ function PosterShell({ children, badge }: { children: React.ReactNode; badge?: s
 }
 
 /* ─── Lite Poster ────────────────────────────────────────────────────────── */
-function LitePoster({ discount, promoCode }: { discount: number; promoCode: string }) {
+function LitePoster({ discount, promoCode, currency }: { discount: number; promoCode: string; currency: Currency }) {
   const { discountedYearly, discountedMonthly, savings } = calcDiscount(LITE.yearly, discount);
   const hasDiscount = discount > 0;
 
@@ -277,7 +328,7 @@ function LitePoster({ discount, promoCode }: { discount: number; promoCode: stri
               className="text-4xl font-bold text-white leading-none"
               style={{ fontFamily: "'DM Mono', monospace" }}
             >
-              ${LITE.monthly}
+              {fmtPrice(LITE.monthly, currency)}
               <span className="text-base font-normal opacity-60">/mo</span>
             </div>
           </div>
@@ -295,14 +346,14 @@ function LitePoster({ discount, promoCode }: { discount: number; promoCode: stri
               className="text-4xl font-bold text-white leading-none"
               style={{ fontFamily: "'DM Mono', monospace" }}
             >
-              ${fmt(LITE.yearly)}
+              {fmtPrice(LITE.yearly, currency)}
               <span className="text-base font-normal opacity-60">/yr</span>
             </div>
             <div
               className="text-xs mt-1 font-semibold"
               style={{ fontFamily: "'DM Sans', sans-serif", color: "#4ade80" }}
             >
-              Save $69.00 vs monthly
+              Save {fmtPrice(LITE.monthly * 12 - LITE.yearly, currency)} vs monthly
             </div>
           </div>
         </div>
@@ -326,6 +377,7 @@ function LitePoster({ discount, promoCode }: { discount: number; promoCode: stri
                 savings={savings}
                 highlight={true}
                 discount={discount}
+                currency={currency}
               />
               <div
                 className="flex-1 rounded-sm p-5 flex flex-col gap-2 border border-dashed border-black/15"
@@ -341,20 +393,20 @@ function LitePoster({ discount, promoCode }: { discount: number; promoCode: stri
                   className="text-3xl font-bold leading-none line-through opacity-40"
                   style={{ fontFamily: "'DM Mono', monospace", color: NAVY }}
                 >
-                  ${fmt(LITE.yearly)}
+                  {fmtPrice(LITE.yearly, currency)}
                   <span className="text-sm font-normal">/year</span>
                 </div>
                 <div
                   className="text-sm opacity-40"
                   style={{ fontFamily: "'DM Mono', monospace", color: NAVY }}
                 >
-                  ${fmt(LITE.monthly)}/month
+                  {fmtPrice(LITE.monthly, currency)}/month
                 </div>
                 <div
                   className="mt-auto text-xs font-semibold"
                   style={{ fontFamily: "'DM Sans', sans-serif", color: ORANGE }}
                 >
-                  You save ${fmt(savings)}/year 🎉
+                  You save {fmtPrice(savings, currency)}/year 🎉
                 </div>
               </div>
             </div>
@@ -384,7 +436,7 @@ function LitePoster({ discount, promoCode }: { discount: number; promoCode: stri
           Plan Includes
         </div>
         <CheckRow><strong>2 Free Users</strong> included with every plan</CheckRow>
-        <CheckRow>Additional users at <strong>$12/user</strong> per month</CheckRow>
+        <CheckRow>Additional users at <strong>{fmtPrice(12, currency)}/user</strong> per month</CheckRow>
         <CheckRow>Full access to all Lite features</CheckRow>
         <CheckRow>Priority email support</CheckRow>
       </div>
@@ -398,14 +450,14 @@ function LitePoster({ discount, promoCode }: { discount: number; promoCode: stri
           background: "#f9f8f6",
         }}
       >
-        visualout.com · Prices in USD · Offer valid while codes are active
+        visualout.com · Prices in {currency.code} · Offer valid while codes are active
       </div>
     </PosterShell>
   );
 }
 
 /* ─── Business Poster ────────────────────────────────────────────────────── */
-function BusinessPoster({ discount, promoCode }: { discount: number; promoCode: string }) {
+function BusinessPoster({ discount, promoCode, currency }: { discount: number; promoCode: string; currency: Currency }) {
   const { discountedYearly, discountedMonthly, savings } = calcDiscount(BUSINESS.yearly, discount);
   const hasDiscount = discount > 0;
 
@@ -443,7 +495,7 @@ function BusinessPoster({ discount, promoCode }: { discount: number; promoCode: 
               className="text-4xl font-bold text-white leading-none"
               style={{ fontFamily: "'DM Mono', monospace" }}
             >
-              ${BUSINESS.monthly}
+              {fmtPrice(BUSINESS.monthly, currency)}
               <span className="text-base font-normal opacity-60">/mo</span>
             </div>
           </div>
@@ -461,14 +513,14 @@ function BusinessPoster({ discount, promoCode }: { discount: number; promoCode: 
               className="text-4xl font-bold text-white leading-none"
               style={{ fontFamily: "'DM Mono', monospace" }}
             >
-              ${fmt(BUSINESS.yearly)}
+              {fmtPrice(BUSINESS.yearly, currency)}
               <span className="text-base font-normal opacity-60">/yr</span>
             </div>
             <div
               className="text-xs mt-1 font-semibold"
               style={{ fontFamily: "'DM Sans', sans-serif", color: "#4ade80" }}
             >
-              Save $134.39 vs monthly
+              Save {fmtPrice(BUSINESS.monthly * 12 - BUSINESS.yearly, currency)} vs monthly
             </div>
           </div>
         </div>
@@ -492,6 +544,7 @@ function BusinessPoster({ discount, promoCode }: { discount: number; promoCode: 
                 savings={savings}
                 highlight={true}
                 discount={discount}
+                currency={currency}
               />
               <div
                 className="flex-1 rounded-sm p-5 flex flex-col gap-2 border border-dashed border-black/15"
@@ -507,20 +560,20 @@ function BusinessPoster({ discount, promoCode }: { discount: number; promoCode: 
                   className="text-3xl font-bold leading-none line-through opacity-40"
                   style={{ fontFamily: "'DM Mono', monospace", color: NAVY }}
                 >
-                  ${fmt(BUSINESS.yearly)}
+                  {fmtPrice(BUSINESS.yearly, currency)}
                   <span className="text-sm font-normal">/year</span>
                 </div>
                 <div
                   className="text-sm opacity-40"
                   style={{ fontFamily: "'DM Mono', monospace", color: NAVY }}
                 >
-                  ${fmt(BUSINESS.monthly)}/month
+                  {fmtPrice(BUSINESS.monthly, currency)}/month
                 </div>
                 <div
                   className="mt-auto text-xs font-semibold"
                   style={{ fontFamily: "'DM Sans', sans-serif", color: ORANGE }}
                 >
-                  You save ${fmt(savings)}/year 🎉
+                  You save {fmtPrice(savings, currency)}/year 🎉
                 </div>
               </div>
             </div>
@@ -550,7 +603,7 @@ function BusinessPoster({ discount, promoCode }: { discount: number; promoCode: 
           Plan Includes
         </div>
         <CheckRow><strong>10 Free Users</strong> included with every plan</CheckRow>
-        <CheckRow>Additional users at <strong>$74/user</strong> per month</CheckRow>
+        <CheckRow>Additional users at <strong>{fmtPrice(74, currency)}/user</strong> per month</CheckRow>
         <CheckRow>Advanced collaboration &amp; analytics</CheckRow>
         <CheckRow>Dedicated account support</CheckRow>
       </div>
@@ -564,14 +617,14 @@ function BusinessPoster({ discount, promoCode }: { discount: number; promoCode: 
           background: "#f9f8f6",
         }}
       >
-        visualout.com · Prices in USD · Offer valid while codes are active
+        visualout.com · Prices in {currency.code} · Offer valid while codes are active
       </div>
     </PosterShell>
   );
 }
 
 /* ─── Comparison / WhatsApp poster ──────────────────────────────────────── */
-function ComparisonPoster({ discount, promoCode }: { discount: number; promoCode: string }) {
+function ComparisonPoster({ discount, promoCode, currency }: { discount: number; promoCode: string; currency: Currency }) {
   const lite = calcDiscount(LITE.yearly, discount);
   const biz = calcDiscount(BUSINESS.yearly, discount);
   const code = promoCode || (discount > 0 ? `${discount}OFF` : null);
@@ -643,13 +696,13 @@ function ComparisonPoster({ discount, promoCode }: { discount: number; promoCode
                 </div>
               </div>
               <div className="text-right text-sm font-semibold" style={{ fontFamily: "'DM Mono', monospace", color: NAVY }}>
-                ${row.monthly}
+                {fmtPrice(row.monthly, currency)}
               </div>
               <div className="text-right text-sm font-semibold" style={{ fontFamily: "'DM Mono', monospace", color: NAVY }}>
-                ${fmt(row.yearly)}
+                {fmtPrice(row.yearly, currency)}
               </div>
               <div className="text-right text-sm font-semibold" style={{ fontFamily: "'DM Mono', monospace", color: GREEN }}>
-                ${fmt(row.yearly / 12)}
+                {fmtPrice(row.yearly / 12, currency)}
               </div>
             </div>
           ))}
@@ -657,8 +710,8 @@ function ComparisonPoster({ discount, promoCode }: { discount: number; promoCode
 
         <div className="grid grid-cols-2 gap-3 mt-4">
           {[
-            { label: "Lite yearly saves", val: "$69.00/yr" },
-            { label: "Business yearly saves", val: "$134.39/yr" },
+            { label: "Lite yearly saves", val: `${fmtPrice(LITE.monthly * 12 - LITE.yearly, currency)}/yr` },
+            { label: "Business yearly saves", val: `${fmtPrice(BUSINESS.monthly * 12 - BUSINESS.yearly, currency)}/yr` },
           ].map((s) => (
             <div
               key={s.label}
@@ -727,13 +780,13 @@ function ComparisonPoster({ discount, promoCode }: { discount: number; promoCode
                 className="text-right text-sm font-bold"
                 style={{ fontFamily: "'DM Mono', monospace", color: discount > 0 ? ORANGE : "rgba(13,18,38,0.3)" }}
               >
-                {discount > 0 ? `$${fmt(row.d.discountedYearly)}` : "—"}
+                {discount > 0 ? fmtPrice(row.d.discountedYearly, currency) : "—"}
               </div>
               <div
                 className="text-right text-sm font-semibold"
                 style={{ fontFamily: "'DM Mono', monospace", color: discount > 0 ? NAVY : "rgba(13,18,38,0.3)" }}
               >
-                {discount > 0 ? `$${fmt(row.d.discountedMonthly)}` : "—"}
+                {discount > 0 ? fmtPrice(row.d.discountedMonthly, currency) : "—"}
               </div>
             </div>
           ))}
@@ -742,8 +795,8 @@ function ComparisonPoster({ discount, promoCode }: { discount: number; promoCode
         {discount > 0 && (
           <div className="grid grid-cols-2 gap-3 mt-4">
             {[
-              { label: "Lite saves", val: `$${fmt(lite.savings)}/yr` },
-              { label: "Business saves", val: `$${fmt(biz.savings)}/yr` },
+              { label: "Lite saves", val: `${fmtPrice(lite.savings, currency)}/yr` },
+              { label: "Business saves", val: `${fmtPrice(biz.savings, currency)}/yr` },
             ].map((s) => (
               <div
                 key={s.label}
@@ -783,28 +836,28 @@ function ComparisonPoster({ discount, promoCode }: { discount: number; promoCode
           }}
         >
           <p className="font-bold mb-2">MeqOS Lite</p>
-          <p className="mb-1 opacity-70">Regular: ${fmt(LITE.yearly)}/year</p>
+          <p className="mb-1 opacity-70">Regular: {fmtPrice(LITE.yearly, currency)}/year</p>
           {discount > 0 ? (
             <p className="mb-3">
-              🔥 <strong>{code}</strong> → ${fmt(lite.discountedYearly)}/year (${fmt(lite.discountedMonthly)}/month)
+              🔥 <strong>{code}</strong> → {fmtPrice(lite.discountedYearly, currency)}/year ({fmtPrice(lite.discountedMonthly, currency)}/month)
             </p>
           ) : (
             <p className="mb-3 opacity-40 italic">Set discount to see promo price</p>
           )}
-          <p className="mb-4 text-xs opacity-60">Includes 2 users · $12 per additional user</p>
+          <p className="mb-4 text-xs opacity-60">Includes 2 users · {fmtPrice(12, currency)} per additional user</p>
 
           <div className="h-px bg-green-200 mb-4" />
 
           <p className="font-bold mb-2">MeqOS Business</p>
-          <p className="mb-1 opacity-70">Regular: ${fmt(BUSINESS.yearly)}/year</p>
+          <p className="mb-1 opacity-70">Regular: {fmtPrice(BUSINESS.yearly, currency)}/year</p>
           {discount > 0 ? (
             <p className="mb-3">
-              🔥 <strong>{code}</strong> → ${fmt(biz.discountedYearly)}/year (${fmt(biz.discountedMonthly)}/month)
+              🔥 <strong>{code}</strong> → {fmtPrice(biz.discountedYearly, currency)}/year ({fmtPrice(biz.discountedMonthly, currency)}/month)
             </p>
           ) : (
             <p className="mb-3 opacity-40 italic">Set discount to see promo price</p>
           )}
-          <p className="text-xs opacity-60">Includes 10 users · $74 per additional user</p>
+          <p className="text-xs opacity-60">Includes 10 users · {fmtPrice(74, currency)} per additional user</p>
         </div>
       </div>
 
@@ -817,7 +870,7 @@ function ComparisonPoster({ discount, promoCode }: { discount: number; promoCode
           background: "#f9f8f6",
         }}
       >
-        visualout.com · Prices in USD · Offer valid while codes are active
+        visualout.com · Prices in {currency.code} · Offer valid while codes are active
       </div>
     </PosterShell>
   );
@@ -834,9 +887,12 @@ export default function App() {
   const [active, setActive] = useState<Tab>("lite");
   const [discount, setDiscount] = useState(0);
   const [promoCode, setPromoCode] = useState("");
+  const [currencyCode, setCurrencyCode] = useState<CurrencyCode>("USD");
 
   const handleDiscount = useCallback((v: number) => setDiscount(v), []);
   const handleCode = useCallback((v: string) => setPromoCode(v), []);
+
+  const currency = CURRENCIES[currencyCode];
 
   return (
     <div className="min-h-screen bg-background">
@@ -885,13 +941,15 @@ export default function App() {
         onChange={handleDiscount}
         promoCode={promoCode}
         onCodeChange={handleCode}
+        currencyCode={currencyCode}
+        onCurrencyChange={setCurrencyCode}
       />
 
       {/* Poster content */}
       <div className="py-4">
-        {active === "lite" && <LitePoster discount={discount} promoCode={promoCode} />}
-        {active === "business" && <BusinessPoster discount={discount} promoCode={promoCode} />}
-        {active === "compare" && <ComparisonPoster discount={discount} promoCode={promoCode} />}
+        {active === "lite" && <LitePoster discount={discount} promoCode={promoCode} currency={currency} />}
+        {active === "business" && <BusinessPoster discount={discount} promoCode={promoCode} currency={currency} />}
+        {active === "compare" && <ComparisonPoster discount={discount} promoCode={promoCode} currency={currency} />}
       </div>
 
       <div
