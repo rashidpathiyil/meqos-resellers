@@ -75,7 +75,7 @@ function DiscountBar({
       className="sticky top-[61px] z-10 border-b border-black/10"
       style={{ background: "#fffef9" }}
     >
-      <div className="max-w-[800px] mx-auto px-6 py-4 flex flex-wrap items-center gap-4">
+      <div className="max-w-[800px] mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center gap-3 sm:gap-4">
         {/* Currency selector */}
         <div className="flex items-center gap-2">
           <label
@@ -271,7 +271,7 @@ function PromoCard({
 /* ─── Poster shell ───────────────────────────────────────────────────────── */
 function PosterShell({ children, badge }: { children: React.ReactNode; badge?: string }) {
   return (
-    <div className="flex justify-center px-4 py-10">
+    <div className="flex justify-center px-3 sm:px-4 py-6 sm:py-10">
       <div
         id="poster-export"
         className="w-full max-w-[640px] bg-card rounded-sm overflow-hidden"
@@ -298,7 +298,7 @@ function LitePoster({ discount, promoCode, currency }: { discount: number; promo
 
   return (
     <PosterShell badge="Perfect for Startups & Small Teams">
-      <div className="px-10 pt-10 pb-8" style={{ background: NAVY }}>
+      <div className="px-5 sm:px-10 pt-8 sm:pt-10 pb-6 sm:pb-8" style={{ background: NAVY }}>
         <div
           className="text-xs font-semibold tracking-widest uppercase mb-3"
           style={{ fontFamily: "'DM Mono', monospace", color: "rgba(255,255,255,0.5)" }}
@@ -306,7 +306,7 @@ function LitePoster({ discount, promoCode, currency }: { discount: number; promo
           MeqOS
         </div>
         <h1
-          className="text-5xl font-black leading-none mb-4"
+          className="text-4xl sm:text-5xl font-black leading-none mb-4"
           style={{ fontFamily: "'Playfair Display', serif", color: "white", letterSpacing: "-0.02em" }}
         >
           Lite
@@ -327,7 +327,7 @@ function LitePoster({ discount, promoCode, currency }: { discount: number; promo
               Monthly
             </div>
             <div
-              className="text-4xl font-bold text-white leading-none"
+              className="text-3xl sm:text-4xl font-bold text-white leading-none"
               style={{ fontFamily: "'DM Mono', monospace" }}
             >
               {fmtPrice(LITE.monthly, currency)}
@@ -345,7 +345,7 @@ function LitePoster({ discount, promoCode, currency }: { discount: number; promo
               Yearly 🔥
             </div>
             <div
-              className="text-4xl font-bold text-white leading-none"
+              className="text-3xl sm:text-4xl font-bold text-white leading-none"
               style={{ fontFamily: "'DM Mono', monospace" }}
             >
               {fmtPrice(LITE.yearly, currency)}
@@ -362,7 +362,7 @@ function LitePoster({ discount, promoCode, currency }: { discount: number; promo
       </div>
 
       {/* Promo */}
-      <div className="px-10 py-8">
+      <div className="px-5 sm:px-10 py-6 sm:py-8">
         {hasDiscount ? (
           <>
             <div
@@ -371,7 +371,7 @@ function LitePoster({ discount, promoCode, currency }: { discount: number; promo
             >
               ⚡ {discount}% Discount Applied
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <PromoCard
                 code={promoCode || `${discount}OFF`}
                 yearlyPrice={discountedYearly}
@@ -430,7 +430,7 @@ function LitePoster({ discount, promoCode, currency }: { discount: number; promo
 
       <Divider />
 
-      <div className="px-10 py-8">
+      <div className="px-5 sm:px-10 py-6 sm:py-8">
         <div
           className="text-xs font-bold tracking-widest uppercase mb-4"
           style={{ fontFamily: "'DM Mono', monospace", color: "rgba(13,18,38,0.45)" }}
@@ -444,7 +444,7 @@ function LitePoster({ discount, promoCode, currency }: { discount: number; promo
       </div>
 
       <div
-        className="px-10 py-4 text-xs text-center"
+        className="px-5 sm:px-10 py-4 text-xs text-center"
         style={{
           fontFamily: "'DM Sans', sans-serif",
           color: "rgba(13,18,38,0.35)",
@@ -465,7 +465,7 @@ function BusinessPoster({ discount, promoCode, currency }: { discount: number; p
 
   return (
     <PosterShell badge="Built for Growing Teams">
-      <div className="px-10 pt-10 pb-8" style={{ background: "#1a1060" }}>
+      <div className="px-5 sm:px-10 pt-8 sm:pt-10 pb-6 sm:pb-8" style={{ background: "#1a1060" }}>
         <div
           className="text-xs font-semibold tracking-widest uppercase mb-3"
           style={{ fontFamily: "'DM Mono', monospace", color: "rgba(255,255,255,0.5)" }}
@@ -473,7 +473,7 @@ function BusinessPoster({ discount, promoCode, currency }: { discount: number; p
           MeqOS
         </div>
         <h1
-          className="text-5xl font-black leading-none mb-4"
+          className="text-4xl sm:text-5xl font-black leading-none mb-4"
           style={{ fontFamily: "'Playfair Display', serif", color: "white", letterSpacing: "-0.02em" }}
         >
           Business
@@ -494,7 +494,7 @@ function BusinessPoster({ discount, promoCode, currency }: { discount: number; p
               Monthly
             </div>
             <div
-              className="text-4xl font-bold text-white leading-none"
+              className="text-3xl sm:text-4xl font-bold text-white leading-none"
               style={{ fontFamily: "'DM Mono', monospace" }}
             >
               {fmtPrice(BUSINESS.monthly, currency)}
@@ -512,7 +512,7 @@ function BusinessPoster({ discount, promoCode, currency }: { discount: number; p
               Yearly 🔥
             </div>
             <div
-              className="text-4xl font-bold text-white leading-none"
+              className="text-3xl sm:text-4xl font-bold text-white leading-none"
               style={{ fontFamily: "'DM Mono', monospace" }}
             >
               {fmtPrice(BUSINESS.yearly, currency)}
@@ -529,7 +529,7 @@ function BusinessPoster({ discount, promoCode, currency }: { discount: number; p
       </div>
 
       {/* Promo */}
-      <div className="px-10 py-8">
+      <div className="px-5 sm:px-10 py-6 sm:py-8">
         {hasDiscount ? (
           <>
             <div
@@ -538,7 +538,7 @@ function BusinessPoster({ discount, promoCode, currency }: { discount: number; p
             >
               ⚡ {discount}% Discount Applied
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <PromoCard
                 code={promoCode || `${discount}OFF`}
                 yearlyPrice={discountedYearly}
@@ -597,7 +597,7 @@ function BusinessPoster({ discount, promoCode, currency }: { discount: number; p
 
       <Divider />
 
-      <div className="px-10 py-8">
+      <div className="px-5 sm:px-10 py-6 sm:py-8">
         <div
           className="text-xs font-bold tracking-widest uppercase mb-4"
           style={{ fontFamily: "'DM Mono', monospace", color: "rgba(13,18,38,0.45)" }}
@@ -611,7 +611,7 @@ function BusinessPoster({ discount, promoCode, currency }: { discount: number; p
       </div>
 
       <div
-        className="px-10 py-4 text-xs text-center"
+        className="px-5 sm:px-10 py-4 text-xs text-center"
         style={{
           fontFamily: "'DM Sans', sans-serif",
           color: "rgba(13,18,38,0.35)",
@@ -633,7 +633,7 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
 
   return (
     <PosterShell>
-      <div className="px-10 pt-10 pb-8" style={{ background: NAVY }}>
+      <div className="px-5 sm:px-10 pt-8 sm:pt-10 pb-6 sm:pb-8" style={{ background: NAVY }}>
         <div
           className="text-xs font-semibold tracking-widest uppercase mb-3"
           style={{ fontFamily: "'DM Mono', monospace", color: "rgba(255,255,255,0.5)" }}
@@ -641,7 +641,7 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
           MeqOS · Pricing Overview
         </div>
         <h1
-          className="text-5xl font-black leading-none"
+          className="text-4xl sm:text-5xl font-black leading-none"
           style={{ fontFamily: "'Playfair Display', serif", color: "white", letterSpacing: "-0.02em" }}
         >
           Compare Plans
@@ -658,7 +658,7 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
       </div>
 
       {/* Standard Pricing */}
-      <div className="px-10 py-8">
+      <div className="px-5 sm:px-10 py-6 sm:py-8">
         <div
           className="text-xs font-bold tracking-widest uppercase mb-5"
           style={{ fontFamily: "'DM Mono', monospace", color: "rgba(13,18,38,0.45)" }}
@@ -666,7 +666,8 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
           Standard Pricing
         </div>
 
-        <div className="rounded-sm overflow-hidden border border-black/10">
+        <div className="-mx-5 px-5 sm:mx-0 sm:px-0 overflow-x-auto">
+        <div className="rounded-sm overflow-hidden border border-black/10 min-w-[460px] sm:min-w-0">
           <div
             className="grid grid-cols-4 text-xs font-bold tracking-wider uppercase px-4 py-3"
             style={{ fontFamily: "'DM Mono', monospace", background: NAVY, color: "rgba(255,255,255,0.6)" }}
@@ -709,6 +710,7 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
             </div>
           ))}
         </div>
+        </div>
 
         <div className="grid grid-cols-2 gap-3 mt-4">
           {[
@@ -734,7 +736,7 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
       <Divider />
 
       {/* Discounted Pricing */}
-      <div className="px-10 py-8">
+      <div className="px-5 sm:px-10 py-6 sm:py-8">
         <div
           className="text-xs font-bold tracking-widest uppercase mb-5"
           style={{ fontFamily: "'DM Mono', monospace", color: ORANGE }}
@@ -742,7 +744,8 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
           {discount > 0 ? `⚡ ${discount}% Off — Promotional Pricing` : "⚡ Promotional Pricing (set discount above)"}
         </div>
 
-        <div className="rounded-sm overflow-hidden border border-black/10">
+        <div className="-mx-5 px-5 sm:mx-0 sm:px-0 overflow-x-auto">
+        <div className="rounded-sm overflow-hidden border border-black/10 min-w-[460px] sm:min-w-0">
           <div
             className="grid grid-cols-4 text-xs font-bold tracking-wider uppercase px-4 py-3"
             style={{ fontFamily: "'DM Mono', monospace", background: ORANGE, color: "rgba(255,255,255,0.85)" }}
@@ -793,6 +796,7 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
             </div>
           ))}
         </div>
+        </div>
 
         {discount > 0 && (
           <div className="grid grid-cols-2 gap-3 mt-4">
@@ -820,7 +824,7 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
       <Divider />
 
       {/* WhatsApp message */}
-      <div className="px-10 py-8">
+      <div className="px-5 sm:px-10 py-6 sm:py-8">
         <div
           className="text-xs font-bold tracking-widest uppercase mb-5"
           style={{ fontFamily: "'DM Mono', monospace", color: "rgba(13,18,38,0.45)" }}
@@ -864,7 +868,7 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
       </div>
 
       <div
-        className="px-10 py-4 text-xs text-center"
+        className="px-5 sm:px-10 py-4 text-xs text-center"
         style={{
           fontFamily: "'DM Sans', sans-serif",
           color: "rgba(13,18,38,0.35)",
@@ -879,10 +883,10 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
 }
 
 /* ─── Root ───────────────────────────────────────────────────────────────── */
-const TABS: { id: Tab; label: string }[] = [
-  { id: "lite", label: "Lite Plan" },
-  { id: "business", label: "Business Plan" },
-  { id: "compare", label: "Comparison Sheet" },
+const TABS: { id: Tab; label: string; short: string }[] = [
+  { id: "lite", label: "Lite Plan", short: "Lite" },
+  { id: "business", label: "Business Plan", short: "Business" },
+  { id: "compare", label: "Comparison Sheet", short: "Compare" },
 ];
 
 export default function App() {
@@ -918,30 +922,33 @@ export default function App() {
     <div className="min-h-screen bg-background">
       {/* Top nav */}
       <div
-        className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 border-b border-black/10"
+        className="sticky top-0 z-20 flex items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-black/10"
         style={{ background: NAVY }}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <span
-            className="text-white font-black text-lg tracking-tight"
+            className="text-white font-black text-base sm:text-lg tracking-tight"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Visualout
           </span>
           <span
-            className="text-xs px-2 py-0.5 rounded-sm font-semibold tracking-widest uppercase"
+            className="hidden sm:inline-block text-xs px-2 py-0.5 rounded-sm font-semibold tracking-widest uppercase"
             style={{ fontFamily: "'DM Mono', monospace", background: ORANGE, color: "white" }}
           >
             Sales Kit
           </span>
         </div>
 
-        <div className="flex gap-1 p-1 rounded-sm" style={{ background: "rgba(255,255,255,0.08)" }}>
+        <div
+          className="flex gap-1 p-1 rounded-sm overflow-x-auto"
+          style={{ background: "rgba(255,255,255,0.08)" }}
+        >
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActive(tab.id)}
-              className="px-4 py-1.5 text-sm rounded-sm transition-all duration-200"
+              className="px-2.5 sm:px-4 py-1.5 text-xs sm:text-sm rounded-sm whitespace-nowrap transition-all duration-200"
               style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontWeight: active === tab.id ? 600 : 400,
@@ -949,7 +956,8 @@ export default function App() {
                 color: active === tab.id ? NAVY : "rgba(255,255,255,0.65)",
               }}
             >
-              {tab.label}
+              <span className="sm:hidden">{tab.short}</span>
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
           ))}
         </div>
