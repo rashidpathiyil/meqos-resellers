@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import html2canvas from "html2canvas-pro";
+import { snapdom } from "@zumer/snapdom";
 
 type Tab = "lite" | "business" | "compare";
 
@@ -898,12 +898,15 @@ export default function App() {
     const el = document.getElementById("poster-export");
     if (!el) return;
     try {
-      const canvas = await html2canvas(el, { scale: 2, useCORS: true });
-      const dataUrl = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.download = `meqos-${active}-poster.png`;
-      link.href = dataUrl;
-      link.click();
+      // Ensure web fonts are fully loaded so text metrics/layout are correct.
+      await document.fonts.ready;
+      await snapdom.download(el, {
+        format: "png",
+        filename: `meqos-${active}-poster`,
+        scale: 2,
+        embedFonts: true,
+        backgroundColor: "#ffffff",
+      });
     } catch (err) {
       console.error("Failed to generate image", err);
     }
