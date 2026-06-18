@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { snapdom } from "@zumer/snapdom";
 
 type Tab = "lite" | "business" | "compare";
@@ -18,10 +18,13 @@ interface Currency {
   rate: number;
 }
 
+// Fallback rates (updated 2026-06-18) used until live rates load or if the
+// fetch fails. AED is pegged to the USD at 3.6725; INR floats, so it's the
+// one that goes stale — hence the live refresh below.
 const CURRENCIES: Record<CurrencyCode, Currency> = {
   USD: { code: "USD", label: "USD ($)", symbol: "$", rate: 1 },
-  INR: { code: "INR", label: "INR (₹)", symbol: "₹", rate: 83.5 },
-  AED: { code: "AED", label: "AED (د.إ)", symbol: "د.إ", rate: 3.67 },
+  INR: { code: "INR", label: "INR (₹)", symbol: "₹", rate: 94.67 },
+  AED: { code: "AED", label: "AED (د.إ)", symbol: "د.إ", rate: 3.6725 },
 };
 
 function fmtPrice(amountInUSD: number, currency: Currency) {
@@ -894,6 +897,33 @@ export default function App() {
   const [discount, setDiscount] = useState(0);
   const [promoCode, setPromoCode] = useState("");
   const [currencyCode, setCurrencyCode] = useState<CurrencyCode>("USD");
+  const [rates, setRates] = useState<Record<CurrencyCode, number>>({
+    USD: CURRENCIES.USD.rate,
+    INR: CURRENCIES.INR.rate,
+    AED: CURRENCIES.AED.rate,
+  });
+
+  // Refresh exchange rates from a live source so conversions stay accurate.
+  // Falls back to the hardcoded rates above if the request fails.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("https://open.er-api.com/v6/latest/USD")
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled || data?.result !== "success" || !data.rates) return;
+        setRates({
+          USD: 1,
+          INR: data.rates.INR ?? CURRENCIES.INR.rate,
+          AED: data.rates.AED ?? CURRENCIES.AED.rate,
+        });
+      })
+      .catch(() => {
+        /* keep fallback rates */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleDiscount = useCallback((v: number) => setDiscount(v), []);
   const handleCode = useCallback((v: string) => setPromoCode(v), []);
@@ -916,7 +946,7 @@ export default function App() {
     }
   };
 
-  const currency = CURRENCIES[currencyCode];
+  const currency = { ...CURRENCIES[currencyCode], rate: rates[currencyCode] };
 
   return (
     <div className="min-h-screen bg-background">
