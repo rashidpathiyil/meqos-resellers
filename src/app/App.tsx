@@ -608,7 +608,7 @@ function BusinessPoster({ discount, promoCode, currency }: { discount: number; p
           Plan Includes
         </div>
         <CheckRow><strong>10 Free Users</strong> included with every plan</CheckRow>
-        <CheckRow>Additional users at <strong>{fmtPrice(74, currency)}/user</strong> per month</CheckRow>
+        <CheckRow>Additional users at <strong>{fmtPrice(12, currency)}/user</strong> per month</CheckRow>
         <CheckRow>Advanced collaboration &amp; analytics</CheckRow>
         <CheckRow>Dedicated account support</CheckRow>
       </div>
@@ -866,7 +866,7 @@ function ComparisonPoster({ discount, promoCode, currency }: { discount: number;
           ) : (
             <p className="mb-3 opacity-40 italic">Set discount to see promo price</p>
           )}
-          <p className="text-xs opacity-60">Includes 10 users · {fmtPrice(74, currency)} per additional user</p>
+          <p className="text-xs opacity-60">Includes 10 users · {fmtPrice(12, currency)} per additional user</p>
         </div>
       </div>
 
